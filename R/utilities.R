@@ -20,10 +20,13 @@ se <- function(x, na.rm = FALSE) {
 
 #' Calculate SD/SE for Errorbar
 #'
-#' This function calculates either the standard deviation or the standard error of a numeric vector, depending on the specified method.
+#' This function calculates either the standard deviation or the standard error of a numeric
+#' vector depending on the specified method. The `fun.errorbar` argument must be either
+#' `"sd"` or `"se"`.
 #'
 #' @param x A numeric vector
-#' @param fun.errorbar A character string indicating the method to calculate the error bar. It can be either "sd" for standard deviation or "se" for standard error. Defaults to "sd"
+#' @param fun.errorbar A character string specifying the method to calculate the error bar.
+#'   Must be `"sd"` for standard deviation or `"se"` for standard error. Defaults to `"sd"`
 #' @param na.rm A logical value indicating whether NA values should be stripped before the computation proceeds. Defaults to FALSE
 #' @return The calculated error bar (either standard deviation or standard error) of the input vector
 #' @examples
@@ -35,6 +38,8 @@ calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
     stats::sd(x, na.rm = na.rm)
   } else if (fun.errorbar == "se") {
     se(x, na.rm = na.rm)
+  } else {
+    stop("fun.errorbar must be 'sd' or 'se'")
   }
 }
 
