@@ -18,23 +18,40 @@ se <- function(x, na.rm = FALSE) {
 
 
 
-#' Calculate SD/SE for Errorbar
+#' Calculate Error for Errorbars
 #'
-#' This function calculates either the standard deviation or the standard error of a numeric vector, depending on the specified method.
+#' This function calculates an error value (standard deviation, standard error,
+#' 95% confidence interval, or a user-supplied function) for a numeric vector.
 #'
 #' @param x A numeric vector
-#' @param fun.errorbar A character string indicating the method to calculate the error bar. It can be either "sd" for standard deviation or "se" for standard error. Defaults to "sd"
-#' @param na.rm A logical value indicating whether NA values should be stripped before the computation proceeds. Defaults to FALSE
-#' @return The calculated error bar (either standard deviation or standard error) of the input vector
+#' @param fun.errorbar Either a character string specifying the method to
+#'   calculate the error ("sd", "se", or "ci"), or a function that accepts
+#'   a numeric vector and returns a single numeric value.
+#' @param na.rm A logical value indicating whether \code{NA} values should be
+#'   removed before computation. Defaults to \code{FALSE}.
+#' @return The calculated error value of the input vector
 #' @examples
 #' calc_error(c(1, 2, 3, 4, 5))
 #' calc_error(c(1, 2, 3, 4, 5, NA), fun.errorbar = "se", na.rm = TRUE)
+#' calc_error(c(1, 2, 3, 4, 5), fun.errorbar = "ci")
+#' calc_error(c(1, 2, 3, 4, 5), fun.errorbar = function(x) max(x) - min(x))
 #' @export
 calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
-  if (fun.errorbar == "sd") {
-    stats::sd(x, na.rm = na.rm)
-  } else if (fun.errorbar == "se") {
-    se(x, na.rm = na.rm)
+  if (is.character(fun.errorbar)) {
+    if (fun.errorbar == "sd") {
+      stats::sd(x, na.rm = na.rm)
+    } else if (fun.errorbar == "se") {
+      se(x, na.rm = na.rm)
+    } else if (fun.errorbar == "ci") {
+      n <- if (na.rm) sum(!is.na(x)) else length(x)
+      se(x, na.rm = na.rm) * stats::qt(0.975, df = n - 1)
+    } else {
+      stop("Unsupported fun.errorbar: ", fun.errorbar)
+    }
+  } else if (is.function(fun.errorbar)) {
+    fun.errorbar(x)
+  } else {
+    stop("fun.errorbar must be a character string or function")
   }
 }
 

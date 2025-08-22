@@ -24,7 +24,7 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #'
 #' This function draws a rectangular error box centered at the mean of x and y coordinates,
 #' with dimensions determined by a specified error calculation method (standard deviation,
-#' standard error, confidence interval, etc.).
+#' standard error, 95% confidence interval, etc.).
 #'
 #' @param mapping Set of aesthetic mappings, usually created with `aes()`
 #' @param data The data to be displayed. If NULL, the default, the data is inherited from the plot data
@@ -45,7 +45,7 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #' \itemize{
 #'   \item "sd": Standard deviation
 #'   \item "se": Standard error (standard deviation divided by square root of the number of observations)
-#'   \item "ci": 95\% confidence interval
+#'   \item "ci": 95\% confidence interval (based on the t-distribution)
 #'   \item custom function: You can provide your own error calculation function
 #' }
 #'
@@ -58,13 +58,17 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #' p + geom_point() +
 #'   geom_errorbox(fill = "white", color = "blue", alpha = 0.3)
 #'
+#' # Using standard deviation (default)
+#' p + geom_point() +
+#'   geom_errorbox(fill = "white", color = "red", alpha = 0.2)
+#'
 #' # Using standard error
 #' p + geom_point() +
-#'   geom_errorbox(fill = "white", color = "red", alpha = 0.2, fun.errorbar = "sd")
-#'
-#' # Using confidence interval
-#' p + geom_point() +
 #'   geom_errorbox(fill = "white", color = "green", alpha = 0.2, fun.errorbar = "se")
+#'
+#' # Using 95% confidence interval
+#' p + geom_point() +
+#'   geom_errorbox(fill = "white", color = "purple", alpha = 0.2, fun.errorbar = "ci")
 #'
 #' # Error boxes by group
 #' p <- ggplot(mtcars, aes(wt, mpg, color = factor(cyl)))
