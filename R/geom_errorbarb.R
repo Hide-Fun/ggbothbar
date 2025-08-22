@@ -52,6 +52,7 @@ geom_errorbarb <- function(mapping = NULL,
 
 #' @format NULL
 #' @usage NULL
+#' @importFrom grid zeroGrob unit
 #' @export
 Geomerrorbarb <- ggproto("Geomerrorbarb", Geom,
 
