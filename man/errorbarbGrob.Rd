@@ -21,7 +21,10 @@ errorbarbGrob(
 
 \item{y}{A numeric or unit object specifying the y-coordinates of the error bars. Defaults to \code{unit(0, "npc")}}
 
-\item{fun.errorbar}{A character string or function indicating how to calculate the error bar. Character options are "sd" (standard deviation), "se" (standard error) and "ci" (95\% confidence interval). A custom function can also be supplied. Defaults to "sd".}
+\item{fun.errorbar}{A character string or function indicating how to
+calculate the error bar. Character options are "sd" (standard deviation),
+"se" (standard error) and "ci" (95\\% confidence interval). A custom
+function can also be supplied. Defaults to "sd".}
 
 \item{na.rm}{A logical value indicating whether NA values should be stripped before the computation proceeds. Defaults to FALSE}
 

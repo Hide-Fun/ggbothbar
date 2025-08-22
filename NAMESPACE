@@ -2,6 +2,8 @@
 
 S3method(makeContent,errorbarb)
 export(Geomerrorbarb)
+export(adjust_axis_scales)
+export(align_axis_scales)
 export(calc_enrichment)
 export(calc_error)
 export(create_errorbarb)

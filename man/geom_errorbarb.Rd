@@ -30,7 +30,10 @@ geom_errorbarb(
 
 \item{...}{Other arguments passed on to \code{layer()}. These are often aesthetics, used to set an aesthetic to a fixed value, like \code{colour = "red"} or \code{size = 3}. They may also be parameters to the paired geom/stat}
 
-\item{fun.errorbar}{A character string or function indicating how to calculate the error bar. Character options are "sd" (standard deviation), "se" (standard error) and "ci" (95\% confidence interval). A custom function can also be supplied. Defaults to "sd".}
+\item{fun.errorbar}{A character string or function indicating how to
+calculate the error bar. Character options are "sd" (standard deviation),
+"se" (standard error) and "ci" (95\\% confidence interval). A custom
+function can also be supplied. Defaults to "sd".}
 
 \item{na.rm}{If \code{FALSE}, the default, removes missing values with a warning. If \code{TRUE} silently removes missing values}
 
