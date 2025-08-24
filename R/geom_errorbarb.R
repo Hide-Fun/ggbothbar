@@ -80,6 +80,7 @@ Geomerrorbarb <- ggproto("Geomerrorbarb", Geom,
       coord$y,
       default.units = "native",
       fun.errorbar = fun.errorbar,
+      na.rm = na.rm,
       errorbar_tip_size = unit(errorbar_tip_size, "cm"),
       gp = grid::gpar(
         col = alpha(coord$colour, coord$alpha),
