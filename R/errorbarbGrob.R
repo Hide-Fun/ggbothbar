@@ -127,8 +127,8 @@ create_errorbarb <- function(x, y, height, width, errorbar_tip_size) {
   if (width <= 0) {
     rlang::abort("`width` must be larger than zero.")
   }
-  if (errorbar_tip_size < 0) {
-    rlang::abort("`errorbar_tip_size` must be larger than zero.")
+  if (errorbar_tip_size <= 0) {
+    rlang::abort("`errorbar_tip_size` must be strictly positive.")
   }
   # calculate coordination of errorbarb
   data.frame(
