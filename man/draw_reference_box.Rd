@@ -29,7 +29,7 @@ draw_reference_box(
 
 \item{colour}{The border color of the reference box. Defaults to "#028760"}
 
-\item{fun.errorbar}{A character string indicating the method to calculate the error bar. It can be either "sd" for standard deviation or "se" for standard error. Defaults to "sd"}
+\item{fun.errorbar}{Error calculation method ("sd", "se", "ci" or a custom function). Defaults to "sd"}
 
 \item{na.rm}{A logical value indicating whether NA values should be stripped before the computation proceeds. Defaults to FALSE}
 
