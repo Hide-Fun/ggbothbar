@@ -17,7 +17,6 @@ se <- function(x, na.rm = FALSE) {
 }
 
 
-
 #' Calculate Error for Errorbars
 #'
 #' This function calculates an error value (standard deviation, standard error,
@@ -82,11 +81,13 @@ calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
 #' enriched_data <- calc_enrichment(df, delta = c("d13c", "d15n"))
 #'
 #' @export
-calc_enrichment <- function(data,
-                            var = "type",
-                            delta = c("d13C", "d15N"), # add new argument
-                            reference = "reference",
-                            na.rm = FALSE) {
+calc_enrichment <- function(
+  data,
+  var = "type",
+  delta = c("d13C", "d15N"), # add new argument
+  reference = "reference",
+  na.rm = FALSE
+) {
   # split data
   reference_data <- data[data[[var]] == reference, ]
 
@@ -158,7 +159,12 @@ fix_limit <- function(.plot, .ratio, .clip = "off") {
 #' label_isotope(13, "C")
 #' # For epsilon 15N
 #' label_isotope(15, "N", notation = "epsilon")
-label_isotope <- function(mass_number, element, notation = "delta", units = "‰") {
+label_isotope <- function(
+  mass_number,
+  element,
+  notation = "delta",
+  units = "‰"
+) {
   # Validate inputs
   if (!is.numeric(mass_number)) {
     stop("mass_number must be numeric")
@@ -173,10 +179,7 @@ label_isotope <- function(mass_number, element, notation = "delta", units = "‰
   }
 
   # Define the notation symbol
-  symbol <- switch(notation,
-    "delta" = "δ",
-    "epsilon" = "ε"
-  )
+  symbol <- switch(notation, "delta" = "δ", "epsilon" = "ε")
 
   # Create the expression using bquote() for proper evaluation
   result <- bquote(
@@ -184,7 +187,9 @@ label_isotope <- function(mass_number, element, notation = "delta", units = "‰
       paste(
         italic(.(symbol)^.(mass_number)),
         .(element),
-        " (", .(units), ")"
+        " (",
+        .(units),
+        ")"
       )
     )
   )
@@ -269,13 +274,13 @@ label_isotope <- function(mass_number, element, notation = "delta", units = "‰
 #'
 #' @export
 write_sheets <- function(
-    .data, # List of dataframes to save
-    sheet_names, # List of sheet names
-    name, # Name of the spreadsheet or file
-    local = FALSE, # Whether to save directly to local Excel
-    download = FALSE, # Whether to download the Google spreadsheet
-    path = NULL # File path for local save or download
-    ) {
+  .data, # List of dataframes to save
+  sheet_names, # List of sheet names
+  name, # Name of the spreadsheet or file
+  local = FALSE, # Whether to save directly to local Excel
+  download = FALSE, # Whether to download the Google spreadsheet
+  path = NULL # File path for local save or download
+) {
   # Validate dependencies
   assert_dependencies(local, download)
 
@@ -327,12 +332,19 @@ assert_dependencies <- function(local, download) {
 
   required_pkgs <- c(required_pkgs, "dplyr")
 
-  missing_pkgs <- required_pkgs[!purrr::map_lgl(required_pkgs, ~ requireNamespace(.x, quietly = TRUE))]
+  missing_pkgs <- required_pkgs[
+    !purrr::map_lgl(required_pkgs, ~ requireNamespace(.x, quietly = TRUE))
+  ]
 
   if (length(missing_pkgs) > 0) {
     pkg_list <- paste0("'", missing_pkgs, "'", collapse = ", ")
     install_cmd <- paste0("install.packages(c(", pkg_list, "))")
-    stop("Required packages missing: ", pkg_list, ". Please install with: ", install_cmd)
+    stop(
+      "Required packages missing: ",
+      pkg_list,
+      ". Please install with: ",
+      install_cmd
+    )
   }
 }
 
@@ -364,7 +376,10 @@ assert_parameters <- function(.data, sheet_names, name, local, download) {
   if (length(sheet_names) != length(.data)) {
     stop(
       "'sheet_names' must have the same length as '.data' (",
-      length(.data), " vs ", length(sheet_names), ")",
+      length(.data),
+      " vs ",
+      length(sheet_names),
+      ")",
       call. = FALSE
     )
   }
@@ -412,7 +427,8 @@ write_local_excel <- function(data_list, sheet_names, file_path) {
 
   # Add sheets and write data
   purrr::walk2(
-    data_list, sheet_names,
+    data_list,
+    sheet_names,
     ~ {
       message("Adding sheet: ", .y)
       openxlsx::addWorksheet(wb, .y)
@@ -457,7 +473,11 @@ write_google_sheets <- function(data_list, sheet_names, spreadsheet_name) {
 
   # Get current sheet names and rename the first sheet
   current_sheets <- googlesheets4::sheet_names(ss)
-  googlesheets4::sheet_rename(ss, sheet = current_sheets[1], new_name = sheet_names[1])
+  googlesheets4::sheet_rename(
+    ss,
+    sheet = current_sheets[1],
+    new_name = sheet_names[1]
+  )
 
   # Write the first dataframe to the first sheet
   message("Writing data to sheet: ", sheet_names[1])
@@ -466,7 +486,8 @@ write_google_sheets <- function(data_list, sheet_names, spreadsheet_name) {
   # Add remaining sheets and write dataframes
   if (length(data_list) > 1) {
     purrr::walk2(
-      data_list[-1], sheet_names[-1],
+      data_list[-1],
+      sheet_names[-1],
       ~ {
         message("Adding sheet: ", .y)
         googlesheets4::sheet_add(ss, .y)
@@ -498,10 +519,16 @@ download_google_sheet <- function(spreadsheet_name, file_path) {
 
   # Find the file in Google Drive
   message("Finding spreadsheet in Google Drive...")
-  file <- googledrive::drive_find(pattern = spreadsheet_name, type = "spreadsheet")
+  file <- googledrive::drive_find(
+    pattern = spreadsheet_name,
+    type = "spreadsheet"
+  )
 
   if (nrow(file) == 0) {
-    warning("Spreadsheet not found in Google Drive. Could not download file.", call. = FALSE)
+    warning(
+      "Spreadsheet not found in Google Drive. Could not download file.",
+      call. = FALSE
+    )
     return(NULL)
   }
 

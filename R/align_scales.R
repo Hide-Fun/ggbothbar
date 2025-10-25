@@ -57,15 +57,16 @@
 #'
 #' @export
 align_axis_scales <- function(
-    plots,
-    axes = c("x", "y"),
-    x_break_step = 3,
-    y_break_step = 3,
-    x_limits = NULL,
-    y_limits = NULL,
-    aspect_ratio = NULL,
-    clip = "off",
-    expand_breaks = FALSE) {
+  plots,
+  axes = c("x", "y"),
+  x_break_step = 3,
+  y_break_step = 3,
+  x_limits = NULL,
+  y_limits = NULL,
+  aspect_ratio = NULL,
+  clip = "off",
+  expand_breaks = FALSE
+) {
   axes <- match.arg(axes, choices = c("x", "y", "both"))
 
   if (!is.list(plots) || length(plots) < 2) {
@@ -136,8 +137,12 @@ align_axis_scales <- function(
   }
 
   coord_args <- list(clip = clip)
-  if (adjust_x) coord_args$xlim <- c(xmin, xmax)
-  if (adjust_y) coord_args$ylim <- c(ymin, ymax)
+  if (adjust_x) {
+    coord_args$xlim <- c(xmin, xmax)
+  }
+  if (adjust_y) {
+    coord_args$ylim <- c(ymin, ymax)
+  }
 
   coord_obj <- if (is.null(aspect_ratio)) {
     do.call(coord_cartesian, coord_args)
@@ -223,14 +228,15 @@ get_lim <- function(b, ax) b$layout$panel_params[[1]][[ax]]$limits
 #'
 #' @export
 adjust_axis_scales <- function(
-    plot,
-    x_break_step = 3,
-    y_break_step = 3,
-    x_limits = NULL,
-    y_limits = NULL,
-    aspect_ratio = NULL,
-    clip = "off",
-    expand_breaks = FALSE) {
+  plot,
+  x_break_step = 3,
+  y_break_step = 3,
+  x_limits = NULL,
+  y_limits = NULL,
+  aspect_ratio = NULL,
+  clip = "off",
+  expand_breaks = FALSE
+) {
   if (!inherits(plot, "gg")) {
     stop("`plot` must be a ggplot object.")
   }

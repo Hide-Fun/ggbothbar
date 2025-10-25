@@ -19,10 +19,12 @@
 #'   geom_point() +
 #'   theme_isotope()
 #' }
-theme_isotope <- function(base_size = 20,
-                          base_family = "Arial",
-                          base_face = "bold",
-                          text_color = "black") {
+theme_isotope <- function(
+  base_size = 20,
+  base_family = "Arial",
+  base_face = "bold",
+  text_color = "black"
+) {
   # Start with theme_classic as base
   theme_classic(
     base_size = base_size,

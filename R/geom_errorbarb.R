@@ -20,18 +20,20 @@
 #' ggplot(mtcars, aes(x = wt, y = mpg)) +
 #'   geom_errorbarb()
 #' @export
-geom_errorbarb <- function(mapping = NULL,
-                           data = NULL,
-                           stat = "identity",
-                           position = "identity",
-                           ...,
-                           fun.errorbar = "sd",
-                           na.rm = FALSE,
-                           errorbar_tip_size = 2,
-                           lineend = "butt",
-                           linewidth = .5,
-                           show.legend = NA,
-                           inherit.aes = TRUE) {
+geom_errorbarb <- function(
+  mapping = NULL,
+  data = NULL,
+  stat = "identity",
+  position = "identity",
+  ...,
+  fun.errorbar = "sd",
+  na.rm = FALSE,
+  errorbar_tip_size = 2,
+  lineend = "butt",
+  linewidth = .5,
+  show.legend = NA,
+  inherit.aes = TRUE
+) {
   layer(
     data = data,
     mapping = mapping,
@@ -54,16 +56,20 @@ geom_errorbarb <- function(mapping = NULL,
 #' @usage NULL
 #' @importFrom grid zeroGrob unit
 #' @export
-Geomerrorbarb <- ggproto("Geomerrorbarb", Geom,
+Geomerrorbarb <- ggproto(
+  "Geomerrorbarb",
+  Geom,
 
   # Transform the data inside the draw_panel() method
-  draw_group = function(data,
-                        panel_params,
-                        coord,
-                        fun.errorbar = "sd",
-                        na.rm = FALSE,
-                        errorbar_tip_size = 2,
-                        lineend = "butt") {
+  draw_group = function(
+    data,
+    panel_params,
+    coord,
+    fun.errorbar = "sd",
+    na.rm = FALSE,
+    errorbar_tip_size = 2,
+    lineend = "butt"
+  ) {
     if (is.null(data) || nrow(data) == 0) {
       return(zeroGrob())
     }

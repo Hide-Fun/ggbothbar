@@ -18,21 +18,38 @@
 #' @param ... Other arguments passed on to \code{geom_rect()}
 #' @return A ggplot object with the reference box added
 #' @export
-draw_reference_box <- function(p, data, x, y, fill = "white", colour = "#028760", fun.errorbar = "sd", na.rm = FALSE, ...) {
+draw_reference_box <- function(
+  p,
+  data,
+  x,
+  y,
+  fill = "white",
+  colour = "#028760",
+  fun.errorbar = "sd",
+  na.rm = FALSE,
+  ...
+) {
   newdata <- data.frame(
-    xmin = mean(data[[x]]) - calc_error(data[[x]], fun.errorbar = fun.errorbar, na.rm = na.rm),
-    xmax = mean(data[[x]]) + calc_error(data[[x]], fun.errorbar = fun.errorbar, na.rm = na.rm),
-    ymin = mean(data[[y]]) - calc_error(data[[y]], fun.errorbar = fun.errorbar, na.rm = na.rm),
-    ymax = mean(data[[y]]) + calc_error(data[[y]], fun.errorbar = fun.errorbar, na.rm = na.rm)
+    xmin = mean(data[[x]]) -
+      calc_error(data[[x]], fun.errorbar = fun.errorbar, na.rm = na.rm),
+    xmax = mean(data[[x]]) +
+      calc_error(data[[x]], fun.errorbar = fun.errorbar, na.rm = na.rm),
+    ymin = mean(data[[y]]) -
+      calc_error(data[[y]], fun.errorbar = fun.errorbar, na.rm = na.rm),
+    ymax = mean(data[[y]]) +
+      calc_error(data[[y]], fun.errorbar = fun.errorbar, na.rm = na.rm)
   )
-  p + geom_rect(
-    data = newdata,
-    mapping = aes(
-      xmin = xmin,
-      xmax = xmax,
-      ymin = ymin,
-      ymax = ymax
-    ),
-    fill = fill, colour = colour, ...
-  )
+  p +
+    geom_rect(
+      data = newdata,
+      mapping = aes(
+        xmin = xmin,
+        xmax = xmax,
+        ymin = ymin,
+        ymax = ymax
+      ),
+      fill = fill,
+      colour = colour,
+      ...
+    )
 }

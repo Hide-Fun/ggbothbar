@@ -26,19 +26,27 @@
 #' )
 #' grid.draw(errorbar_grob)
 #' @export
-errorbarbGrob <- function(x = grid::unit(0, "npc"),
-                          y = grid::unit(0, "npc"),
-                          fun.errorbar = "sd",
-                          na.rm = FALSE,
-                          errorbar_tip_size = grid::unit(0.1, "npc"),
-                          default.units = "npc",
-                          name = NULL,
-                          gp = grid::gpar(),
-                          vp = NULL) {
+errorbarbGrob <- function(
+  x = grid::unit(0, "npc"),
+  y = grid::unit(0, "npc"),
+  fun.errorbar = "sd",
+  na.rm = FALSE,
+  errorbar_tip_size = grid::unit(0.1, "npc"),
+  default.units = "npc",
+  name = NULL,
+  gp = grid::gpar(),
+  vp = NULL
+) {
   # Use the default unit if the user does not specify one
-  if (!grid::is.unit(x)) x <- grid::unit(x, default.units)
-  if (!grid::is.unit(y)) y <- grid::unit(y, default.units)
-  if (!grid::is.unit(errorbar_tip_size)) errorbar_tip_size <- grid::unit(errorbar_tip_size, default.units)
+  if (!grid::is.unit(x)) {
+    x <- grid::unit(x, default.units)
+  }
+  if (!grid::is.unit(y)) {
+    y <- grid::unit(y, default.units)
+  }
+  if (!grid::is.unit(errorbar_tip_size)) {
+    errorbar_tip_size <- grid::unit(errorbar_tip_size, default.units)
+  }
 
   # Return a gTree of class "errorbarb"
   grid::gTree(
@@ -67,7 +75,11 @@ makeContent.errorbarb <- function(grob) {
   # Convert position and diameter values absolute units
   x <- grid::convertX(grob$x, "mm", valueOnly = TRUE)
   y <- grid::convertY(grob$y, "mm", valueOnly = TRUE)
-  errorbar_tip_size <- grid::convertUnit(grob$errorbar_tip_size, "cm", valueOnly = TRUE)
+  errorbar_tip_size <- grid::convertUnit(
+    grob$errorbar_tip_size,
+    "cm",
+    valueOnly = TRUE
+  )
 
   fun.errorbar <- grob$fun.errorbar
   na.rm <- grob$na.rm
