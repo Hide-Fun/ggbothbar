@@ -56,52 +56,126 @@ calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
 
 #' Calculate Isotopic Enrichment
 #'
-#' This function calculates the isotopic enrichment factors (e13c and e15n) by comparing
-#' sample values to a reference group.
+#' Calculate isotopic enrichment factors by subtracting mean reference values
+#' from each supplied isotope column.
 #'
 #' @param data A data frame containing isotopic data
 #' @param var Character string specifying the column name that distinguishes between reference and sample groups
-#' @param delta Character vector of length 2 specifying the column names for d13C and d15N values
+#' @param delta Character vector specifying the column names that store \eqn{\delta} values (e.g., d13C, d15N, d34S)
+#' @param epsilon Optional character vector specifying the names of the enrichment columns to append; defaults to swapping the leading
+#'   \code{"d"} in each entry of \code{delta} for \code{"e"} when \code{delta} matches the pattern \code{^d\\d+[A-Za-z]+$}
 #' @param reference Character string specifying the reference group value in the 'var' column
 #' @param na.rm Logical; if TRUE, removes NA values when calculating mean reference values
 #'
-#' @return A data frame with additional columns:
-#'   \item{e13c}{Enrichment factor for carbon isotopes (d13C sample - mean d13C reference)}
-#'   \item{e15n}{Enrichment factor for nitrogen isotopes (d15N sample - mean d15N reference)}
+#' @return A data frame with additional enrichment columns, one for each element of \code{delta}
 #'
 #' @examples
-#' # Create example data
+#' # Example data
 #' df <- data.frame(
-#'   type = c("reference", "reference", "sample", "sample"),
-#'   d13c = c(-20, -21, -18, -19),
-#'   d15n = c(5, 6, 8, 9)
+#'   type = c("reference", "sample", "sample", "reference"),
+#'   d13c = c(-20.0, -21.5, -19.0, -20.5),
+#'   d15n = c(7.0, 8.2, 6.5, 7.4),
+#'   d34S = c(12.0, 11.5, 13.2, 12.4)
 #' )
 #'
-#' # Calculate enrichment
-#' enriched_data <- calc_enrichment(df, delta = c("d13c", "d15n"))
+#' # 1) Default: epsilon names are inferred as "e13C" and "e15N"
+#' out1 <- calc_enrichment(df)
+#' head(out1)
+#'
+#' # 2) User supplied output names (case-insensitive)
+#' out2 <- calc_enrichment(
+#'   df,
+#'   delta = c("d13c", "d15n"),
+#'   epsilon = c("e13c", "e15n")
+#' )
+#' head(out2)
+#'
+#' # 3) Multiple delta columns with inferred epsilon names ("e13C", "e15N", "e34S")
+#' out3 <- calc_enrichment(
+#'   df,
+#'   delta = c("d13c", "d15n", "d34S")
+#' )
+#' head(out3)
+#'
+#' # 4) Multiple delta columns with explicit epsilon names
+#' out4 <- calc_enrichment(
+#'   df,
+#'   delta = c("d13c", "d15n", "d34S"),
+#'   epsilon = c("E13C_enr", "E15N_enr", "E34S_enr")
+#' )
+#' head(out4)
 #'
 #' @export
 calc_enrichment <- function(
   data,
   var = "type",
-  delta = c("d13C", "d15N"), # add new argument
+  delta = c("d13C", "d15N"),
+  epsilon = NULL,
   reference = "reference",
   na.rm = FALSE
 ) {
-  # split data
-  reference_data <- data[data[[var]] == reference, ]
+  # -- Validation -------------------------------------------------------------
+  # Check that `var` column exists
+  if (!is.character(var) || length(var) != 1L || !(var %in% names(data))) {
+    stop("`var` must be the name of a column in `data`.")
+  }
 
-  # calculate mean and sd
-  mean_ref_1 <- mean(reference_data[[delta[1]]], na.rm = na.rm)
-  mean_ref_2 <- mean(reference_data[[delta[2]]], na.rm = na.rm)
+  # Check that `reference` level exists
+  if (!is.character(reference) || length(reference) != 1L) {
+    stop("`reference` must be a single character value.")
+  }
+  reference_rows <- data[[var]] == reference
+  if (!any(reference_rows, na.rm = TRUE)) {
+    stop("No rows match `reference` in the `var` column.")
+  }
 
-  # calculate enrichment factor
-  e13c <- data[[delta[1]]] - mean_ref_1
-  e15n <- data[[delta[2]]] - mean_ref_2
+  # Check `delta`
+  if (!is.character(delta) || length(delta) < 1L) {
+    stop("`delta` must be a character vector of length >= 1.")
+  }
+  missing_delta <- setdiff(delta, names(data))
+  if (length(missing_delta) > 0L) {
+    stop(sprintf(
+      "These `delta` columns are missing in `data`: %s",
+      paste(missing_delta, collapse = ", ")
+    ))
+  }
 
+  # Derive or validate `epsilon`
+  if (is.null(epsilon)) {
+    # When epsilon is NULL, validate delta patterns and derive names
+    # Pattern: start with 'd', followed by digits, then one or more letters.
+    is_valid <- grepl("^d\\d+[A-Za-z]+$", delta, perl = TRUE)
+    if (!all(is_valid)) {
+      bad <- delta[!is_valid]
+      stop(sprintf(
+        "When `epsilon` is NULL, each `delta` must match pattern ^d\\d+[A-Za-z]+$. Invalid: %s",
+        paste(bad, collapse = ", ")
+      ))
+    }
+    epsilon <- sub("^d", "e", delta)
+  } else {
+    if (!is.character(epsilon) || length(epsilon) != length(delta)) {
+      stop("`epsilon` must be a character vector the same length as `delta`.")
+    }
+  }
+
+  # -- Computation ------------------------------------------------------------
+  reference_data <- data[reference_rows, , drop = FALSE]
+
+  # Compute reference means for each delta
+  ref_means <- vapply(
+    delta,
+    function(col) mean(reference_data[[col]], na.rm = na.rm),
+    numeric(1)
+  )
+
+  # Prepare result and append enrichment columns
   result <- data
-  result$e13c <- e13c
-  result$e15n <- e15n
+  for (i in seq_along(delta)) {
+    # Enrichment = sample value - reference mean
+    result[[epsilon[i]]] <- data[[delta[i]]] - ref_means[i]
+  }
 
   return(result)
 }
