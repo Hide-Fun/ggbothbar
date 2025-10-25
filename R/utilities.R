@@ -73,19 +73,19 @@ calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
 #' # Example data
 #' df <- data.frame(
 #'   type = c("reference", "sample", "sample", "reference"),
-#'   d13c = c(-20.0, -21.5, -19.0, -20.5),
-#'   d15n = c(7.0, 8.2, 6.5, 7.4),
+#'   d13C = c(-20.0, -21.5, -19.0, -20.5),
+#'   d15N = c(7.0, 8.2, 6.5, 7.4),
 #'   d34S = c(12.0, 11.5, 13.2, 12.4)
 #' )
 #'
-#' # 1) Default: epsilon names are inferred as "e13C" and "e15N"
+#' # 1) Default: epsilon names are inferred as "e13C" and "e15N" (backword compatibility)
 #' out1 <- calc_enrichment(df)
 #' head(out1)
 #'
-#' # 2) User supplied output names (case-insensitive)
+#' # 2) User supplied output names
 #' out2 <- calc_enrichment(
 #'   df,
-#'   delta = c("d13c", "d15n"),
+#'   delta = c("d13C", "d15N"),
 #'   epsilon = c("e13c", "e15n")
 #' )
 #' head(out2)
@@ -93,14 +93,14 @@ calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
 #' # 3) Multiple delta columns with inferred epsilon names ("e13C", "e15N", "e34S")
 #' out3 <- calc_enrichment(
 #'   df,
-#'   delta = c("d13c", "d15n", "d34S")
+#'   delta = c("d13C", "d15N", "d34S")
 #' )
 #' head(out3)
 #'
 #' # 4) Multiple delta columns with explicit epsilon names
 #' out4 <- calc_enrichment(
 #'   df,
-#'   delta = c("d13c", "d15n", "d34S"),
+#'   delta = c("d13C", "d15N", "d34S"),
 #'   epsilon = c("E13C_enr", "E15N_enr", "E34S_enr")
 #' )
 #' head(out4)
