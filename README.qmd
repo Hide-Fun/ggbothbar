@@ -26,3 +26,54 @@ library(ggplot2)
 ggplot(mtcars, aes(x = wt, y = mpg)) +
   geom_errorbarb()
 ```
+
+## Isotopic data workflows
+
+The package includes helpers for mycoheterotrophic isotopic data. Start from
+replicate measurements, calculate enrichment, then visualise group-level
+uncertainty along both axes.
+
+```{r iso-data, message=FALSE}
+iso_raw <- tibble::tribble(
+  ~type,       ~d13c, ~d15n,
+  "reference", -20.1,   7.2,
+  "reference", -19.8,   7.0,
+  "sample",    -17.5,   9.8,
+  "sample",    -18.0,   9.3
+)
+
+iso_enriched <- calc_enrichment(iso_raw, delta = c("d13c", "d15n"))
+iso_enriched
+```
+
+### Error bars in both directions
+
+`geom_errorbarb()` summarises each group into cross-shaped error bars. Supply a
+grouping aesthetic so replicates for the same taxon or treatment are combined.
+
+```{r iso-barb, message=FALSE}
+ggplot(
+  iso_enriched,
+  aes(d13c, d15n, colour = type, group = type)
+) +
+  geom_point(size = 3) +
+  geom_errorbarb(fun.errorbar = "se", linewidth = 0.6, errorbar_tip_size = 1.2) +
+  scale_colour_brewer(palette = "Set1") +
+  labs(x = expression(delta^{13}*"C"), y = expression(delta^{15}*"N"))
+```
+
+### Error boxes for confidence regions
+
+`geom_errorbox()` draws rectangles that span the chosen error metric in both
+dimensions. Use it to emphasise the region that contains the group mean.
+
+```{r iso-box, message=FALSE}
+ggplot(
+  iso_enriched,
+  aes(d13c, d15n, fill = type, group = type)
+) +
+  geom_errorbox(alpha = 0.2, colour = NA, fun.errorbar = "sd") +
+  geom_point(size = 3, colour = "grey20") +
+  scale_fill_brewer(palette = "Set1") +
+  labs(x = expression(delta^{13}*"C"), y = expression(delta^{15}*"N"))
+```
