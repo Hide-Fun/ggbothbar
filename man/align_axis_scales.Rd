@@ -57,7 +57,8 @@ and \code{scale_y_continuous()} as their \code{expand} argument. For example,
 Default: \code{waiver()}.}
 }
 \value{
-A list of ggplot objects with aligned axis scales.
+A list of ggplot objects with aligned axis scales (same length and
+order as the input \code{plots} list).
 }
 \description{
 Ensures consistent axis limits and break intervals across multiple ggplot
@@ -72,6 +73,22 @@ This function separates two concepts:
 \item The scale padding is controlled by \code{expand}, which is passed to
 \code{scale_x_continuous(expand = ...)} and \code{scale_y_continuous(expand = ...)}.
 }
+
+Only continuous axes can be aligned. If an axis requested via \code{axes}
+is discrete (factor / character) in any of the plots, the function stops
+with an informative error rather than partially modifying the scales.
+In that case, convert the scale to numeric first or remove the axis
+from \code{axes}.
+
+\code{align_axis_scales()} returns a list of ggplot objects in the same order
+they were supplied. Each plot receives a shared \verb{scale_*_continuous()}
+plus either \code{coord_cartesian()} or \code{coord_fixed()} (if \code{aspect_ratio}
+is set) so that the visible range, break spacing, and expansion are
+consistent across the collection.
+When \code{expand_breaks = TRUE}, the upper bound of each continuous span is
+increased just enough so that \code{(max - min)} becomes an exact multiple of the
+relevant break step, yielding "clean" tick positions while keeping padding
+control in \code{expand}.
 }
 \examples{
 library(ggplot2)
