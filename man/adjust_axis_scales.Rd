@@ -12,7 +12,8 @@ adjust_axis_scales(
   y_limits = NULL,
   aspect_ratio = NULL,
   clip = "off",
-  expand_breaks = FALSE
+  expand_breaks = FALSE,
+  expand = waiver()
 )
 }
 \arguments{
@@ -22,45 +23,146 @@ adjust_axis_scales(
 
 \item{y_break_step}{Numeric. Step size for y-axis breaks (default: 3).}
 
-\item{x_limits}{Optional numeric vector. x-axis limits, either \code{c(min, max)} or a single number.}
+\item{x_limits}{Optional numeric vector. x-axis visible limits, either
+\code{c(min, max)} or a single number.}
 
-\item{y_limits}{Optional numeric vector. y-axis limits, either \code{c(min, max)} or a single number.}
+\item{y_limits}{Optional numeric vector. y-axis visible limits, either
+\code{c(min, max)} or a single number.}
 
-\item{aspect_ratio}{Optional numeric. If specified, enforces a fixed aspect ratio by calling \code{coord_fixed()}.}
+\item{aspect_ratio}{Optional numeric. If specified, enforces a fixed aspect
+ratio via \code{coord_fixed()}.}
 
-\item{clip}{Character. Passed to \verb{coord_*()}. One of \code{"on"}, \code{"off"}, or \code{"inherit"} (default: \code{"off"}).}
+\item{clip}{Character. Passed to \verb{coord_*()}. One of \code{"on"}, \code{"off"},
+or \code{"inherit"} (default: \code{"off"}).}
 
-\item{expand_breaks}{Logical. If \code{TRUE}, the maximum axis values are expanded so the range is
-an exact multiple of the break step.}
+\item{expand_breaks}{Logical. If \code{TRUE}, the max axis values are extended so
+that the span becomes an exact multiple of the break step. This ONLY
+affects the computed limits (xlim/ylim), not the scale padding.}
+
+\item{expand}{Expansion specification passed to both \code{scale_x_continuous()}
+and \code{scale_y_continuous()} as their \code{expand} argument. For example,
+\code{expansion(mult = 0)} removes padding; \code{waiver()} uses ggplot2 defaults.
+Default: \code{waiver()}.}
 }
 \value{
 A ggplot object with adjusted axis scales.
 }
 \description{
-Adjusts axis scales of a single ggplot object with user-specified break steps,
-limits, and aspect ratio. This function is useful when you want to fine-tune
-the appearance of a single plot.
+Adjusts axis scales of a single ggplot object with user-specified break
+steps, limits, expansion, and aspect ratio. This function is useful when you
+want to fine-tune the appearance of a single plot.
+}
+\details{
+As in \code{align_axis_scales()}, the visible plotting range is controlled by
+\code{x_limits} / \code{y_limits} (applied via \verb{coord_*()}), while scale padding is
+controlled by \code{expand}.
 }
 \examples{
 library(ggplot2)
 
-# Create a sample plot
 p <- ggplot(mtcars, aes(wt, mpg)) +
   geom_point() +
   labs(title = "Miles per Gallon vs Weight")
 
-# Adjust axis scales with custom break steps and limits
-p_adjusted <- adjust_axis_scales(
+##
+## 1. Basic usage with custom breaks
+##
+p_basic <- adjust_axis_scales(
   plot = p,
   x_break_step = 0.5,
+  y_break_step = 5
+)
+
+# -> x breaks at (roughly) seq(xmin, xmax, by = 0.5),
+#    y breaks at seq(ymin, ymax, by = 5),
+#    where xmin/xmax/ymin/ymax come from the plot's data range.
+p_basic
+
+
+##
+## 2. Force visible x/y ranges using x_limits / y_limits
+##
+p_forced_limits <- adjust_axis_scales(
+  plot = p,
+  x_limits = c(2, 5),   # show only wt in [2, 5]
+  y_limits = c(10, 35), # show only mpg in [10, 35]
+  x_break_step = 0.5,
+  y_break_step = 5
+)
+
+# NOTE:
+#   The tick breaks will now be seq(2, 5, by = 0.5) on x and
+#   seq(10, 35, by = 5) on y, *not* based on the original data range.
+p_forced_limits
+
+
+##
+## 3. Make tick spacing "pretty" with expand_breaks = TRUE
+##
+# Suppose x_limits after merging are c(1.2, 4.7) and x_break_step = 1.
+# Raw span = 3.5, which is not a multiple of 1.
+# With expand_breaks = TRUE, we bump the max up so that
+# (max - min) becomes a clean multiple of 1, e.g. to 4.2 -> 5.2, etc.
+# This yields clean ticks at 1, 2, 3, 4, 5, ...
+
+p_pretty_ticks <- adjust_axis_scales(
+  plot = p,
+  x_break_step = 1,
   y_break_step = 5,
-  x_limits = c(1, 6),
-  y_limits = c(10, 35),
-  aspect_ratio = 1,
   expand_breaks = TRUE
 )
 
-# Display the adjusted plot
-p_adjusted
+p_pretty_ticks
+
+
+##
+## 4. Control panel padding with expand
+##
+# Case A: default expansion (waiver()) -> ~5\% headroom/tailroom.
+p_default_pad <- adjust_axis_scales(
+  plot = p,
+  x_break_step = 0.5,
+  y_break_step = 5,
+  expand = waiver()
+)
+
+# Case B: no padding at all.
+# The plotting panel starts exactly at the first break and ends exactly
+# at the last break. Good for tightly packed comparisons.
+p_no_pad <- adjust_axis_scales(
+  plot = p,
+  x_break_step = 0.5,
+  y_break_step = 5,
+  expand = expansion(mult = 0)
+)
+
+# Case C: asymmetric padding using `add`.
+# Here we add +2 on the high end of y, useful to leave "headroom"
+# above the highest point for labels/annotations.
+p_headroom <- adjust_axis_scales(
+  plot = p,
+  x_break_step = 0.5,
+  y_break_step = 5,
+  expand = expansion(add = c(0, 2))
+)
+
+# Visually compare p_default_pad, p_no_pad, p_headroom
+
+
+##
+## 5. Lock aspect ratio
+##
+# aspect_ratio = 1 means "treat one x-unit as the same visual length
+# as one y-unit", after accounting for observed spans. This is common
+# in scatterplots where slope should reflect actual numeric slope.
+
+p_fixed_ratio <- adjust_axis_scales(
+  plot = p,
+  x_break_step = 0.5,
+  y_break_step = 5,
+  aspect_ratio = 1
+)
+
+p_fixed_ratio
 
 }
