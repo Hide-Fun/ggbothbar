@@ -4,10 +4,10 @@
 \alias{makeContent.errorbarb}
 \title{Create Content for Error Bar Grob}
 \usage{
-\method{makeContent}{errorbarb}(grob)
+\method{makeContent}{errorbarb}(x)
 }
 \arguments{
-\item{grob}{An object of class "errorbarb"}
+\item{x}{An object of class "errorbarb"}
 }
 \value{
 A gTree object with the children set to the calculated error bars

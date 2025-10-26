@@ -52,9 +52,15 @@ geom_errorbarb <- function(
   )
 }
 
+#' Geomerrorbarb ggproto object
+#'
+#' Internal ggproto backing `geom_errorbarb()`. Most users should call
+#' `geom_errorbarb()` directly rather than constructing this object manually.
+#'
 #' @format NULL
 #' @usage NULL
-#' @importFrom grid zeroGrob unit
+#' @family ggplot2 geoms
+#' @importFrom grid nullGrob unit
 #' @export
 Geomerrorbarb <- ggproto(
   "Geomerrorbarb",
@@ -71,7 +77,7 @@ Geomerrorbarb <- ggproto(
     lineend = "butt"
   ) {
     if (is.null(data) || nrow(data) == 0) {
-      return(zeroGrob())
+      return(nullGrob())
     }
     # Supply the coordinate system for the plot
     if (!coord$is_linear()) {

@@ -9,15 +9,19 @@ calc_error(x, fun.errorbar = "sd", na.rm = FALSE)
 \arguments{
 \item{x}{A numeric vector}
 
-\item{fun.errorbar}{Either a character string specifying the method to calculate the error ("sd", "se", or "ci"), or a function that returns a numeric value.}
+\item{fun.errorbar}{Either a character string specifying the method to
+calculate the error ("sd", "se", or "ci"), or a function that accepts
+a numeric vector and returns a single numeric value.}
 
-\item{na.rm}{A logical value indicating whether NA values should be stripped before the computation proceeds. Defaults to FALSE}
+\item{na.rm}{A logical value indicating whether \code{NA} values should be
+removed before computation. Defaults to \code{FALSE}.}
 }
 \value{
 The calculated error value of the input vector
 }
 \description{
-This function calculates an error value (standard deviation, standard error, 95\% confidence interval, or a user-supplied function) for a numeric vector.
+This function calculates an error value (standard deviation, standard error,
+95\% confidence interval, or a user-supplied function) for a numeric vector.
 }
 \examples{
 calc_error(c(1, 2, 3, 4, 5))
