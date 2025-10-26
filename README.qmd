@@ -3,7 +3,6 @@ title: "README"
 format: gfm
 editor: visual
 dpi: 400
-bibliography: references.bib
 ---
 
 ## ggbotbar
@@ -29,9 +28,7 @@ ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 ## Isotopic data workflows
 
-The package includes helpers for mycoheterotrophic isotopic data. Start from
-replicate measurements, calculate enrichment, then visualise group-level
-uncertainty along both axes.
+The package includes helpers for mycoheterotrophic isotopic data. Start from replicate measurements, calculate enrichment, then visualise group-level uncertainty along both axes.
 
 ```{r iso-data, message=FALSE}
 iso_raw <- tibble::tribble(
@@ -48,32 +45,43 @@ iso_enriched
 
 ### Error bars in both directions
 
-`geom_errorbarb()` summarises each group into cross-shaped error bars. Supply a
-grouping aesthetic so replicates for the same taxon or treatment are combined.
+`geom_errorbarb()` summarises each group into cross-shaped error bars. Supply a grouping aesthetic so replicates for the same taxon or treatment are combined.
 
 ```{r iso-barb, message=FALSE}
 ggplot(
   iso_enriched,
   aes(d13c, d15n, colour = type, group = type)
 ) +
-  geom_point(size = 3) +
+  geom_point(size = 1) +
+  stat_mean_point(size = 2) +
   geom_errorbarb(fun.errorbar = "se", linewidth = 0.6, errorbar_tip_size = 1.2) +
   scale_colour_brewer(palette = "Set1") +
-  labs(x = expression(delta^{13}*"C"), y = expression(delta^{15}*"N"))
+  labs(x = label_isotope(13, "C"), y = label_isotope(15, "N"))
 ```
 
-### Error boxes for confidence regions
-
-`geom_errorbox()` draws rectangles that span the chosen error metric in both
-dimensions. Use it to emphasise the region that contains the group mean.
+### Enrichment factor with Error boxes
 
 ```{r iso-box, message=FALSE}
-ggplot(
-  iso_enriched,
-  aes(d13c, d15n, fill = type, group = type)
-) +
-  geom_errorbox(alpha = 0.2, colour = NA, fun.errorbar = "sd") +
-  geom_point(size = 3, colour = "grey20") +
-  scale_fill_brewer(palette = "Set1") +
-  labs(x = expression(delta^{13}*"C"), y = expression(delta^{15}*"N"))
+ggplot() +
+  geom_hline(yintercept = 0, linetype = "dotted", colour = "grey50") +
+  geom_vline(xintercept = 0, linetype = "dotted", colour = "grey50") +
+  stat_mean_point(
+    data = filter(iso_enriched, type != "reference"),
+    mapping = aes(x = e13c, y = e15n),
+    size = 2
+  ) +
+  geom_errorbarb(
+    data = filter(iso_enriched, type != "reference"),
+    mapping = aes(x = e13c, y = e15n),
+    fun.errorbar = "sd"
+  ) +
+  geom_errorbox(
+    data = filter(iso_enriched, type == "reference"),
+    mapping = aes(x = e13c, y = e15n),
+    fill = NA,
+    fun.errorbar = "sd",
+    colour = "darkgreen"
+  ) +
+  labs(x = label_isotope(13, "C", "epsilon"), y = label_isotope(15, "N", "epsilon")) +
+  theme_isotope(base_family = "Arial")
 ```
