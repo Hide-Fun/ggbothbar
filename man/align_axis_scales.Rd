@@ -49,25 +49,25 @@ library(ggplot2)
 library(patchwork)
 
 # Prepare example datasets
-df4 <- subset(mtcars, cyl == 4)
-df6 <- subset(mtcars, cyl == 6)
+df1 <- subset(mtcars, cyl == 4)
+df2 <- subset(mtcars, cyl == 6)
 
 # Create ggplot objects
-p4 <- ggplot(df4, aes(wt, mpg)) +
+p1 <- ggplot(df1, aes(wt, mpg)) +
   geom_point(color = "steelblue") +
   labs(title = "4 cylinders")
 
-p6 <- ggplot(df6, aes(wt, mpg)) +
+p2 <- ggplot(df2, aes(wt, mpg)) +
   geom_point(color = "firebrick") +
   labs(title = "6 cylinders")
 
 # Align axis scales (adjust both axes, fix aspect ratio)
 aligned <- align_axis_scales(
-  plots         = list(p4, p6),
-  axes          = "both",
-  x_break_step  = 0.5,
-  y_break_step  = 5,
-  aspect_ratio  = 1,
+  plots = list(p1, p2),
+  axes = "both",
+  x_break_step = 0.5,
+  y_break_step = 5,
+  aspect_ratio = 1,
   expand_breaks = TRUE
 )
 
@@ -76,8 +76,8 @@ aligned[[1]] + aligned[[2]]
 
 # Align only x-axis
 aligned_x <- align_axis_scales(
-  plots        = list(p4, p6),
-  axes         = "x",
+  plots = list(p1, p2),
+  axes = "x",
   x_break_step = 0.5
 )
 aligned_x[[1]] + aligned_x[[2]]

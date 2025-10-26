@@ -51,12 +51,12 @@ p <- ggplot(mtcars, aes(wt, mpg)) +
 
 # Adjust axis scales with custom break steps and limits
 p_adjusted <- adjust_axis_scales(
-  plot          = p,
-  x_break_step  = 0.5,
-  y_break_step  = 5,
-  x_limits      = c(1, 6),
-  y_limits      = c(10, 35),
-  aspect_ratio  = 1,
+  plot = p,
+  x_break_step = 0.5,
+  y_break_step = 5,
+  x_limits = c(1, 6),
+  y_limits = c(10, 35),
+  aspect_ratio = 1,
   expand_breaks = TRUE
 )
 
