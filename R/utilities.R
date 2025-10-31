@@ -224,20 +224,22 @@ fix_limit <- function(.plot, .ratio, .clip = "off") {
 #' @param element Character. The element symbol (e.g., "C" for carbon)
 #' @param notation Character. Either "delta" or "epsilon" (default: "delta")
 #' @param units Character. The units to display (default: "‰")
+#' @param italic_iso_symbol Logical. Should the delta/epsilon symbol be set in italics? (default: FALSE)
 #'
 #' @return An expression object for use in ggplot2 axis labels
 #' @export
 #'
 #' @examples
-#' # For delta 13C
+#' # For delta 13C, no italics on symbol
 #' label_isotope(13, "C")
-#' # For epsilon 15N
-#' label_isotope(15, "N", notation = "epsilon")
+#' # For epsilon 15N, *with* italics on symbol
+#' label_isotope(15, "N", notation = "epsilon", italic_iso_symbol = TRUE)
 label_isotope <- function(
   mass_number,
   element,
   notation = "delta",
-  units = "‰"
+  units = "‰",
+  italic_iso_symbol = FALSE
 ) {
   # Validate inputs
   if (!is.numeric(mass_number)) {
@@ -252,14 +254,25 @@ label_isotope <- function(
     stop('notation must be either "delta" or "epsilon"')
   }
 
+  if (!is.logical(italic_iso_symbol) || length(italic_iso_symbol) != 1) {
+    stop("italic_iso_symbol must be a single logical value")
+  }
+
   # Define the notation symbol
   symbol <- switch(notation, "delta" = "δ", "epsilon" = "ε")
 
-  # Create the expression using bquote() for proper evaluation
+  # Build the symbol expression: either italic(symbol) or plain symbol
+  symbol_expr <- if (italic_iso_symbol) {
+    bquote(italic(.(symbol)))
+  } else {
+    bquote(.(symbol))
+  }
+
+  # Create full expression for label: symbol^mass_number element (units)
   result <- bquote(
     expression(
       paste(
-        italic(.(symbol)^.(mass_number)),
+        .(symbol_expr)^.(mass_number),
         .(element),
         " (",
         .(units),
@@ -268,7 +281,6 @@ label_isotope <- function(
     )
   )
 
-  # Evaluate the expression
   return(eval(result))
 }
 
