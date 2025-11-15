@@ -31,3 +31,4 @@ Suggests:
     rmarkdown (>= 2.5),
     patchwork
 RoxygenNote: 7.3.2
+Config/testthat/edition: 3
