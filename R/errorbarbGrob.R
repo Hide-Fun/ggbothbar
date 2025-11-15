@@ -26,19 +26,27 @@
 #' )
 #' grid.draw(errorbar_grob)
 #' @export
-errorbarbGrob <- function(x = grid::unit(0, "npc"),
-                          y = grid::unit(0, "npc"),
-                          fun.errorbar = "sd",
-                          na.rm = FALSE,
-                          errorbar_tip_size = grid::unit(0.1, "npc"),
-                          default.units = "npc",
-                          name = NULL,
-                          gp = grid::gpar(),
-                          vp = NULL) {
+errorbarbGrob <- function(
+  x = grid::unit(0, "npc"),
+  y = grid::unit(0, "npc"),
+  fun.errorbar = "sd",
+  na.rm = FALSE,
+  errorbar_tip_size = grid::unit(0.1, "npc"),
+  default.units = "npc",
+  name = NULL,
+  gp = grid::gpar(),
+  vp = NULL
+) {
   # Use the default unit if the user does not specify one
-  if (!grid::is.unit(x)) x <- grid::unit(x, default.units)
-  if (!grid::is.unit(y)) y <- grid::unit(y, default.units)
-  if (!grid::is.unit(errorbar_tip_size)) errorbar_tip_size <- grid::unit(errorbar_tip_size, default.units)
+  if (!grid::is.unit(x)) {
+    x <- grid::unit(x, default.units)
+  }
+  if (!grid::is.unit(y)) {
+    y <- grid::unit(y, default.units)
+  }
+  if (!grid::is.unit(errorbar_tip_size)) {
+    errorbar_tip_size <- grid::unit(errorbar_tip_size, default.units)
+  }
 
   # Return a gTree of class "errorbarb"
   grid::gTree(
@@ -58,36 +66,40 @@ errorbarbGrob <- function(x = grid::unit(0, "npc"),
 #'
 #' This function defines the content of the error bar grob, calculating the positions and dimensions of the error bars.
 #'
-#' @param grob An object of class "errorbarb"
+#' @param x An object of class "errorbarb"
 #' @return A gTree object with the children set to the calculated error bars
 #' @importFrom grid makeContent
 #' @export makeContent.errorbarb
 #' @export
-makeContent.errorbarb <- function(grob) {
+makeContent.errorbarb <- function(x) {
   # Convert position and diameter values absolute units
-  x <- grid::convertX(grob$x, "mm", valueOnly = TRUE)
-  y <- grid::convertY(grob$y, "mm", valueOnly = TRUE)
-  errorbar_tip_size <- grid::convertUnit(grob$errorbar_tip_size, "cm", valueOnly = TRUE)
+  coords_x <- grid::convertX(x$x, "mm", valueOnly = TRUE)
+  coords_y <- grid::convertY(x$y, "mm", valueOnly = TRUE)
+  errorbar_tip_size <- grid::convertUnit(
+    x$errorbar_tip_size,
+    "cm",
+    valueOnly = TRUE
+  )
 
-  fun.errorbar <- grob$fun.errorbar
-  na.rm <- grob$na.rm
+  fun.errorbar <- x$fun.errorbar
+  na.rm <- x$na.rm
 
   # summarise mean & sd or se
   # calculate coordination
   if (fun.errorbar == "sd") {
     errorbarb <- create_errorbarb(
-      x = mean(x, na.rm = na.rm),
-      y = mean(y, na.rm = na.rm),
-      height = stats::sd(y, na.rm = na.rm),
-      width = stats::sd(x, na.rm = na.rm),
+      x = mean(coords_x, na.rm = na.rm),
+      y = mean(coords_y, na.rm = na.rm),
+      height = stats::sd(coords_y, na.rm = na.rm),
+      width = stats::sd(coords_x, na.rm = na.rm),
       errorbar_tip_size = errorbar_tip_size
     )
   } else if (fun.errorbar == "se") {
     errorbarb <- create_errorbarb(
-      x = mean(x, na.rm = na.rm),
-      y = mean(y, na.rm = na.rm),
-      height = se(y, na.rm = na.rm),
-      width = se(x, na.rm = na.rm),
+      x = mean(coords_x, na.rm = na.rm),
+      y = mean(coords_y, na.rm = na.rm),
+      height = se(coords_y, na.rm = na.rm),
+      width = se(coords_x, na.rm = na.rm),
       errorbar_tip_size = errorbar_tip_size
     )
   }
@@ -99,10 +111,10 @@ makeContent.errorbarb <- function(grob) {
     x1 = errorbarb$xend,
     y1 = errorbarb$yend,
     default.units = "mm",
-    gp = grob$gp
+    gp = x$gp
   )
 
-  grid::setChildren(grob, grid::gList(errorbarb_line))
+  grid::setChildren(x, grid::gList(errorbarb_line))
 }
 
 #' Create Coordinates for Error Bars with Custom Tips
@@ -121,14 +133,14 @@ makeContent.errorbarb <- function(grob) {
 #' @export
 create_errorbarb <- function(x, y, height, width, errorbar_tip_size) {
   # validate the input arguments
-  if (height < 0) {
-    rlang::abort("`height` must be non-negative.")
+  if (height <= 0) {
+    rlang::abort("`height` must be larger than zero.")
   }
-  if (width < 0) {
-    rlang::abort("`width` must be non-negative.")
+  if (width <= 0) {
+    rlang::abort("`width` must be larger than zero.")
   }
-  if (errorbar_tip_size < 0) {
-    rlang::abort("`errorbar_tip_size` must be non-negative.")
+  if (errorbar_tip_size <= 0) {
+    rlang::abort("`errorbar_tip_size` must be strictly positive.")
   }
   # calculate coordination of errorbarb
   data.frame(

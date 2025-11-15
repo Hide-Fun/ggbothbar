@@ -3,7 +3,9 @@
 #' @format ggproto class
 #' @importFrom ggplot2 ggproto
 #' @keywords internal
-StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
+StatErrorbox <- ggplot2::ggproto(
+  "StatErrorbox",
+  ggplot2::Stat,
   required_aes = c("x", "y"),
   compute_group = function(data, scales, fun.errorbar = "sd", na.rm = FALSE) {
     x <- data$x
@@ -12,10 +14,14 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
     data.frame(
       x = mean(x, na.rm = na.rm),
       y = mean(y, na.rm = na.rm),
-      xmin = mean(x, na.rm = na.rm) - calc_error(x, fun.errorbar = fun.errorbar, na.rm = na.rm),
-      xmax = mean(x, na.rm = na.rm) + calc_error(x, fun.errorbar = fun.errorbar, na.rm = na.rm),
-      ymin = mean(y, na.rm = na.rm) - calc_error(y, fun.errorbar = fun.errorbar, na.rm = na.rm),
-      ymax = mean(y, na.rm = na.rm) + calc_error(y, fun.errorbar = fun.errorbar, na.rm = na.rm)
+      xmin = mean(x, na.rm = na.rm) -
+        calc_error(x, fun.errorbar = fun.errorbar, na.rm = na.rm),
+      xmax = mean(x, na.rm = na.rm) +
+        calc_error(x, fun.errorbar = fun.errorbar, na.rm = na.rm),
+      ymin = mean(y, na.rm = na.rm) -
+        calc_error(y, fun.errorbar = fun.errorbar, na.rm = na.rm),
+      ymax = mean(y, na.rm = na.rm) +
+        calc_error(y, fun.errorbar = fun.errorbar, na.rm = na.rm)
     )
   }
 )
@@ -24,7 +30,7 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #'
 #' This function draws a rectangular error box centered at the mean of x and y coordinates,
 #' with dimensions determined by a specified error calculation method (standard deviation,
-#' standard error, confidence interval, etc.).
+#' standard error, 95% confidence interval, etc.).
 #'
 #' @param mapping Set of aesthetic mappings, usually created with `aes()`
 #' @param data The data to be displayed. If NULL, the default, the data is inherited from the plot data
@@ -45,7 +51,7 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #' \itemize{
 #'   \item "sd": Standard deviation
 #'   \item "se": Standard error (standard deviation divided by square root of the number of observations)
-#'   \item "ci": 95\% confidence interval
+#'   \item "ci": 95\% confidence interval (based on the t-distribution)
 #'   \item custom function: You can provide your own error calculation function
 #' }
 #'
@@ -58,13 +64,17 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #' p + geom_point() +
 #'   geom_errorbox(fill = "white", color = "blue", alpha = 0.3)
 #'
+#' # Using standard deviation (default)
+#' p + geom_point() +
+#'   geom_errorbox(fill = "white", color = "red", alpha = 0.2)
+#'
 #' # Using standard error
 #' p + geom_point() +
-#'   geom_errorbox(fill = "white", color = "red", alpha = 0.2, fun.errorbar = "sd")
-#'
-#' # Using confidence interval
-#' p + geom_point() +
 #'   geom_errorbox(fill = "white", color = "green", alpha = 0.2, fun.errorbar = "se")
+#'
+#' # Using 95% confidence interval
+#' p + geom_point() +
+#'   geom_errorbox(fill = "white", color = "purple", alpha = 0.2, fun.errorbar = "ci")
 #'
 #' # Error boxes by group
 #' p <- ggplot(mtcars, aes(wt, mpg, color = factor(cyl)))
@@ -74,10 +84,17 @@ StatErrorbox <- ggplot2::ggproto("StatErrorbox", ggplot2::Stat,
 #'
 #' @export
 #' @importFrom ggplot2 layer GeomRect
-geom_errorbox <- function(mapping = NULL, data = NULL, stat = "errorbox",
-                          position = "identity", ...,
-                          fun.errorbar = "sd", na.rm = FALSE,
-                          show.legend = NA, inherit.aes = TRUE) {
+geom_errorbox <- function(
+  mapping = NULL,
+  data = NULL,
+  stat = "errorbox",
+  position = "identity",
+  ...,
+  fun.errorbar = "sd",
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+) {
   ggplot2::layer(
     data = data,
     mapping = mapping,

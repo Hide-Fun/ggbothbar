@@ -18,9 +18,16 @@
 #'   geom_point() +
 #'   stat_mean_point()
 #' @export
-stat_mean_point <- function(mapping = NULL, data = NULL, geom = "point",
-                            position = "identity", na.rm = FALSE, show.legend = NA,
-                            inherit.aes = TRUE, ...) {
+stat_mean_point <- function(
+  mapping = NULL,
+  data = NULL,
+  geom = "point",
+  position = "identity",
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE,
+  ...
+) {
   layer(
     stat = StatMeanPoint,
     data = data,
@@ -34,7 +41,9 @@ stat_mean_point <- function(mapping = NULL, data = NULL, geom = "point",
 }
 
 #' @import ggplot2
-StatMeanPoint <- ggproto("StatMeanPoint", Stat,
+StatMeanPoint <- ggproto(
+  "StatMeanPoint",
+  Stat,
   compute_group = function(data, scales, na.rm = FALSE) {
     data.frame(
       x = mean(data$x, na.rm = na.rm),

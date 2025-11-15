@@ -20,18 +20,20 @@
 #' ggplot(mtcars, aes(x = wt, y = mpg)) +
 #'   geom_errorbarb()
 #' @export
-geom_errorbarb <- function(mapping = NULL,
-                           data = NULL,
-                           stat = "identity",
-                           position = "identity",
-                           ...,
-                           fun.errorbar = "sd",
-                           na.rm = FALSE,
-                           errorbar_tip_size = 2,
-                           lineend = "butt",
-                           linewidth = .5,
-                           show.legend = NA,
-                           inherit.aes = TRUE) {
+geom_errorbarb <- function(
+  mapping = NULL,
+  data = NULL,
+  stat = "identity",
+  position = "identity",
+  ...,
+  fun.errorbar = "sd",
+  na.rm = FALSE,
+  errorbar_tip_size = 2,
+  lineend = "butt",
+  linewidth = .5,
+  show.legend = NA,
+  inherit.aes = TRUE
+) {
   layer(
     data = data,
     mapping = mapping,
@@ -50,21 +52,32 @@ geom_errorbarb <- function(mapping = NULL,
   )
 }
 
+#' Geomerrorbarb ggproto object
+#'
+#' Internal ggproto backing `geom_errorbarb()`. Most users should call
+#' `geom_errorbarb()` directly rather than constructing this object manually.
+#'
 #' @format NULL
 #' @usage NULL
+#' @family ggplot2 geoms
+#' @importFrom grid nullGrob unit
 #' @export
-Geomerrorbarb <- ggproto("Geomerrorbarb", Geom,
+Geomerrorbarb <- ggproto(
+  "Geomerrorbarb",
+  Geom,
 
   # Transform the data inside the draw_panel() method
-  draw_group = function(data,
-                        panel_params,
-                        coord,
-                        fun.errorbar = "sd",
-                        na.rm = FALSE,
-                        errorbar_tip_size = 2,
-                        lineend = "butt") {
+  draw_group = function(
+    data,
+    panel_params,
+    coord,
+    fun.errorbar = "sd",
+    na.rm = FALSE,
+    errorbar_tip_size = 2,
+    lineend = "butt"
+  ) {
     if (is.null(data) || nrow(data) == 0) {
-      return(zeroGrob())
+      return(nullGrob())
     }
     # Supply the coordinate system for the plot
     if (!coord$is_linear()) {
@@ -80,6 +93,7 @@ Geomerrorbarb <- ggproto("Geomerrorbarb", Geom,
       coord$y,
       default.units = "native",
       fun.errorbar = fun.errorbar,
+      na.rm = na.rm,
       errorbar_tip_size = unit(errorbar_tip_size, "cm"),
       gp = grid::gpar(
         col = alpha(coord$colour, coord$alpha),

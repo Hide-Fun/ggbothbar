@@ -8,6 +8,7 @@ calc_enrichment(
   data,
   var = "type",
   delta = c("d13C", "d15N"),
+  epsilon = NULL,
   reference = "reference",
   na.rm = FALSE
 )
@@ -17,30 +18,56 @@ calc_enrichment(
 
 \item{var}{Character string specifying the column name that distinguishes between reference and sample groups}
 
-\item{delta}{Character vector of length 2 specifying the column names for d13C and d15N values}
+\item{delta}{Character vector specifying the column names that store \eqn{\delta} values (e.g., d13C, d15N, d34S)}
+
+\item{epsilon}{Optional character vector specifying the names of the enrichment columns to append; defaults to swapping the leading
+\code{"d"} in each entry of \code{delta} for \code{"e"} when \code{delta} matches the pattern \code{^d\\d+[A-Za-z]+$}}
 
 \item{reference}{Character string specifying the reference group value in the 'var' column}
 
 \item{na.rm}{Logical; if TRUE, removes NA values when calculating mean reference values}
 }
 \value{
-A data frame with additional columns:
-\item{e13c}{Enrichment factor for carbon isotopes (d13C sample - mean d13C reference)}
-\item{e15n}{Enrichment factor for nitrogen isotopes (d15N sample - mean d15N reference)}
+A data frame with additional enrichment columns, one for each element of \code{delta}
 }
 \description{
-This function calculates the isotopic enrichment factors (e13c and e15n) by comparing
-sample values to a reference group.
+Calculate isotopic enrichment factors by subtracting mean reference values
+from each supplied isotope column.
 }
 \examples{
-# Create example data
+# Example data
 df <- data.frame(
-  type = c("reference", "reference", "sample", "sample"),
-  d13c = c(-20, -21, -18, -19),
-  d15n = c(5, 6, 8, 9)
+  type = c("reference", "sample", "sample", "reference"),
+  d13C = c(-20.0, -21.5, -19.0, -20.5),
+  d15N = c(7.0, 8.2, 6.5, 7.4),
+  d34S = c(12.0, 11.5, 13.2, 12.4)
 )
 
-# Calculate enrichment
-enriched_data <- calc_enrichment(df, delta = c("d13c", "d15n"))
+# 1) Default: epsilon names are inferred as "e13C" and "e15N" (backword compatibility)
+out1 <- calc_enrichment(df)
+head(out1)
+
+# 2) User supplied output names
+out2 <- calc_enrichment(
+  df,
+  delta = c("d13C", "d15N"),
+  epsilon = c("e13c", "e15n")
+)
+head(out2)
+
+# 3) Multiple delta columns with inferred epsilon names ("e13C", "e15N", "e34S")
+out3 <- calc_enrichment(
+  df,
+  delta = c("d13C", "d15N", "d34S")
+)
+head(out3)
+
+# 4) Multiple delta columns with explicit epsilon names
+out4 <- calc_enrichment(
+  df,
+  delta = c("d13C", "d15N", "d34S"),
+  epsilon = c("E13C_enr", "E15N_enr", "E34S_enr")
+)
+head(out4)
 
 }
