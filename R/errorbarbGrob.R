@@ -133,11 +133,11 @@ makeContent.errorbarb <- function(x) {
 #' @export
 create_errorbarb <- function(x, y, height, width, errorbar_tip_size) {
   # validate the input arguments
-  if (height < 0) {
-    rlang::abort("`height` must be non-negative.")
+  if (height <= 0) {
+    rlang::abort("`height` must be larger than zero.")
   }
-  if (width < 0) {
-    rlang::abort("`width` must be non-negative.")
+  if (width <= 0) {
+    rlang::abort("`width` must be larger than zero.")
   }
   if (errorbar_tip_size <= 0) {
     rlang::abort("`errorbar_tip_size` must be strictly positive.")
