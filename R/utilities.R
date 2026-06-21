@@ -223,14 +223,14 @@ fix_limit <- function(.plot, .ratio, .clip = "off") {
 #' @param mass_number Numeric. The isotope number (e.g., 13 for carbon-13)
 #' @param element Character. The element symbol (e.g., "C" for carbon)
 #' @param notation Character. Either "delta" or "epsilon" (default: "delta")
-#' @param units Character. The units to display (default: "‰")
+#' @param units Character. The units to display (default: "\\u2030")
 #' @param italic_iso_symbol Logical. Should the delta/epsilon symbol be set in italics? (default: FALSE)
 #' @param is_markdown Logical. If TRUE, output in markdown format compatible with the marquee package
-#'        (uses `{.sup …}` for superscript). If FALSE (default), output as expression for ggplot2.
+#'        (uses `{.sup ...}` for superscript). If FALSE (default), output as expression for ggplot2.
 #'
 #' @return If is_markdown = FALSE, returns an expression object for ggplot2 axis labels.
 #'         If is_markdown = TRUE, returns a character string using marquee-style markdown,
-#'         e.g., `δ{.sup13}C (‰)` or `*ε*{.sup15}N (‰)` depending on italic_iso_symbol.
+#'         e.g., `\\u03b4{.sup13}C (\\u2030)` or `*\\u03b5*{.sup15}N (\\u2030)` depending on italic_iso_symbol.
 #' @export
 #'
 #' @examples
@@ -242,7 +242,7 @@ label_isotope <- function(
   mass_number,
   element,
   notation = "delta",
-  units = "‰",
+  units = "\u2030",
   italic_iso_symbol = FALSE,
   is_markdown = FALSE
 ) {
@@ -264,7 +264,7 @@ label_isotope <- function(
   }
 
   # Define the notation symbol
-  symbol <- switch(notation, "delta" = "δ", "epsilon" = "ε")
+  symbol <- switch(notation, "delta" = "\u03b4", "epsilon" = "\u03b5")
 
   if (is_markdown) {
     # Markdown output using marquee style custom span for superscript

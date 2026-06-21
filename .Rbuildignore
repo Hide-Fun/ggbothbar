@@ -3,3 +3,5 @@
 ^LICENSE\.md$
 ^README\.qmd$
 ^README_files$
+^AGENTS\.md$
+^vignettes$

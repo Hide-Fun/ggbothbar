@@ -20,17 +20,17 @@ label_isotope(
 
 \item{notation}{Character. Either "delta" or "epsilon" (default: "delta")}
 
-\item{units}{Character. The units to display (default: "‰")}
+\item{units}{Character. The units to display (default: "\\u2030")}
 
 \item{italic_iso_symbol}{Logical. Should the delta/epsilon symbol be set in italics? (default: FALSE)}
 
 \item{is_markdown}{Logical. If TRUE, output in markdown format compatible with the marquee package
-(uses \verb{\{.sup …\}} for superscript). If FALSE (default), output as expression for ggplot2.}
+(uses \verb{\{.sup ...\}} for superscript). If FALSE (default), output as expression for ggplot2.}
 }
 \value{
 If is_markdown = FALSE, returns an expression object for ggplot2 axis labels.
 If is_markdown = TRUE, returns a character string using marquee-style markdown,
-e.g., \verb{δ\{.sup13\}C (‰)} or \verb{*ε*\{.sup15\}N (‰)} depending on italic_iso_symbol.
+e.g., \verb{\\\\u03b4\{.sup13\}C (\\\\u2030)} or \verb{*\\\\u03b5*\{.sup15\}N (\\\\u2030)} depending on italic_iso_symbol.
 }
 \description{
 Create formatted axis labels for isotope data
