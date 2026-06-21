@@ -4,10 +4,10 @@
 \alias{download_google_sheet}
 \title{Download a Google Spreadsheet as Excel}
 \usage{
-download_google_sheet(spreadsheet_name, file_path)
+download_google_sheet(spreadsheet_id, file_path)
 }
 \arguments{
-\item{spreadsheet_name}{Name of the spreadsheet to download}
+\item{spreadsheet_id}{ID of the spreadsheet to download}
 
 \item{file_path}{Path to save the Excel file}
 }

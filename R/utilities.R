@@ -358,7 +358,7 @@ label_isotope <- function(
 #' }
 #'
 #' @importFrom googlesheets4 gs4_create sheet_names sheet_rename sheet_write sheet_add gs4_has_token gs4_auth gs4_get as_sheets_id request_generate request_make range_autofit
-#' @importFrom googledrive drive_find drive_download drive_has_token drive_auth
+#' @importFrom googledrive as_id drive_download drive_has_token drive_auth
 #' @importFrom dplyr tibble
 #' @importFrom rlang .data .env
 #' @importFrom purrr map map_lgl
@@ -461,7 +461,7 @@ write_sheets <- function(
 
     # Download if requested
     if (download) {
-      file_path <- download_google_sheet(name, path)
+      file_path <- download_google_sheet(result$spreadsheet_id[[1]], path)
       if (!is.null(file_path)) {
         result$file_path <- file_path
       }
@@ -864,29 +864,14 @@ apply_google_sheet_format <- function(
 
 #' Download a Google Spreadsheet as Excel
 #'
-#' @param spreadsheet_name Name of the spreadsheet to download
+#' @param spreadsheet_id ID of the spreadsheet to download
 #' @param file_path Path to save the Excel file
 #' @return The file path if successful, NULL otherwise
 #' @keywords internal
-download_google_sheet <- function(spreadsheet_name, file_path) {
+download_google_sheet <- function(spreadsheet_id, file_path) {
   if (!googledrive::drive_has_token()) {
     message("Authenticating with Google Drive...")
     googledrive::drive_auth()
-  }
-
-  # Find the file in Google Drive
-  message("Finding spreadsheet in Google Drive...")
-  file <- googledrive::drive_find(
-    pattern = spreadsheet_name,
-    type = "spreadsheet"
-  )
-
-  if (nrow(file) == 0) {
-    warning(
-      "Spreadsheet not found in Google Drive. Could not download file.",
-      call. = FALSE
-    )
-    return(NULL)
   }
 
   # Create directory if it doesn't exist
@@ -898,7 +883,7 @@ download_google_sheet <- function(spreadsheet_name, file_path) {
   # Download the file
   message("Downloading spreadsheet to: ", file_path)
   googledrive::drive_download(
-    file = file$id[1], # Use the first match if multiple files found
+    file = googledrive::as_id(spreadsheet_id),
     path = file_path,
     type = "xlsx",
     overwrite = TRUE
