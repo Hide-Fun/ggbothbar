@@ -16,7 +16,7 @@ library(ggbothbar)
 packageVersion("ggbothbar")
 ```
 
-    [1] '1.1.0'
+    [1] '1.1.1'
 
 ``` r
 library(ggplot2)
@@ -62,10 +62,15 @@ treatment are combined.
 ``` r
 ggplot(
   iso_enriched,
-  aes(d13c, d15n, colour = type, group = type)
+  aes(d13c, d15n, colour = type, group = type, label = type)
 ) +
   geom_point(size = 1) +
   stat_mean_point(size = 2) +
+  stat_mean_label(
+    geom = "text",
+    position = position_nudge(x = 0.25, y = 0.2),
+    show.legend = FALSE
+  ) +
   geom_errorbarb(fun.errorbar = "se", linewidth = 0.6, errorbar_tip_size = 1.2) +
   scale_colour_brewer(palette = "Set1") +
   labs(x = label_isotope(13, "C"), y = label_isotope(15, "N"))
