@@ -4,7 +4,14 @@
 \alias{label_isotope}
 \title{Create formatted axis labels for isotope data}
 \usage{
-label_isotope(mass_number, element, notation = "delta", units = "‰")
+label_isotope(
+  mass_number,
+  element,
+  notation = "delta",
+  units = "‰",
+  italic_iso_symbol = FALSE,
+  is_markdown = FALSE
+)
 }
 \arguments{
 \item{mass_number}{Numeric. The isotope number (e.g., 13 for carbon-13)}
@@ -14,16 +21,23 @@ label_isotope(mass_number, element, notation = "delta", units = "‰")
 \item{notation}{Character. Either "delta" or "epsilon" (default: "delta")}
 
 \item{units}{Character. The units to display (default: "‰")}
+
+\item{italic_iso_symbol}{Logical. Should the delta/epsilon symbol be set in italics? (default: FALSE)}
+
+\item{is_markdown}{Logical. If TRUE, output in markdown format compatible with the marquee package
+(uses \verb{\{.sup …\}} for superscript). If FALSE (default), output as expression for ggplot2.}
 }
 \value{
-An expression object for use in ggplot2 axis labels
+If is_markdown = FALSE, returns an expression object for ggplot2 axis labels.
+If is_markdown = TRUE, returns a character string using marquee-style markdown,
+e.g., \verb{δ\{.sup13\}C (‰)} or \verb{*ε*\{.sup15\}N (‰)} depending on italic_iso_symbol.
 }
 \description{
 Create formatted axis labels for isotope data
 }
 \examples{
-# For delta 13C
+# For delta 13C (expression)
 label_isotope(13, "C")
-# For epsilon 15N
-label_isotope(15, "N", notation = "epsilon")
+# For epsilon 15N (markdown, symbol italic)
+label_isotope(15, "N", notation = "epsilon", italic_iso_symbol = TRUE, is_markdown = TRUE)
 }

@@ -97,7 +97,7 @@ ggplot() +
     colour = "darkgreen"
   ) +
   labs(x = label_isotope(13, "C", "epsilon"), y = label_isotope(15, "N", "epsilon")) +
-  theme_isotope(base_family = "Arial")
+  theme_aca(base_family = "Arial")
 ```
 
 ![](README_files/figure-commonmark/iso-box-1.png)
