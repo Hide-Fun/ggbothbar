@@ -204,15 +204,40 @@ calc_enrichment <- function(
 #' @importFrom ggplot2 ggplot_build coord_fixed
 #' @export
 fix_aspect_ratio <- function(.plot, .ratio, .clip = "off") {
-  # get x limits
-  xr1 <- ggplot_build(.plot)$layout$panel_scales_x[[1]]$range$range[[1]]
-  xr2 <- ggplot_build(.plot)$layout$panel_scales_x[[1]]$range$range[[2]]
-  # get y limits
-  yr1 <- ggplot_build(.plot)$layout$panel_scales_y[[1]]$range$range[[1]]
-  yr2 <- ggplot_build(.plot)$layout$panel_scales_y[[1]]$range$range[[2]]
+  if (!is.numeric(.ratio) || length(.ratio) != 1L || !is.finite(.ratio) || .ratio <= 0) {
+    stop("'.ratio' must be a single positive finite numeric value", call. = FALSE)
+  }
+
+  built_plot <- ggplot_build(.plot)
+  x_range_raw <- built_plot$layout$panel_scales_x[[1]]$range$range
+  y_range_raw <- built_plot$layout$panel_scales_y[[1]]$range$range
+
+  validate_axis_range <- function(range, axis) {
+    if (!is.numeric(range) || length(range) != 2L || any(!is.finite(range))) {
+      stop(
+        "Cannot fix aspect ratio because the ",
+        axis,
+        " axis range is not a finite numeric range.",
+        call. = FALSE
+      )
+    }
+
+    axis_range <- abs(range[[1]] - range[[2]])
+    if (axis_range <= 0) {
+      stop(
+        "Cannot fix aspect ratio because the ",
+        axis,
+        " axis range has zero width.",
+        call. = FALSE
+      )
+    }
+
+    axis_range
+  }
+
   # calculate diff
-  x_range <- abs(xr1 - xr2)
-  y_range <- abs(yr1 - yr2)
+  x_range <- validate_axis_range(x_range_raw, "x")
+  y_range <- validate_axis_range(y_range_raw, "y")
   stund <- x_range / y_range
   rlt <- .plot + coord_fixed(ratio = stund * .ratio, clip = .clip)
   return(rlt)
