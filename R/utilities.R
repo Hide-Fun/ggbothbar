@@ -43,6 +43,9 @@ calc_error <- function(x, fun.errorbar = "sd", na.rm = FALSE) {
       se(x, na.rm = na.rm)
     } else if (fun.errorbar == "ci") {
       n <- if (na.rm) sum(!is.na(x)) else length(x)
+      if (n <= 1L) {
+        return(NA_real_)
+      }
       se(x, na.rm = na.rm) * stats::qt(0.975, df = n - 1)
     } else {
       stop("Unsupported fun.errorbar: ", fun.errorbar)
