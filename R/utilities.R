@@ -199,11 +199,11 @@ calc_enrichment <- function(
 #'   geom_point()
 #'
 #' # Adjust the aspect ratio
-#' fix_limit(p, .ratio = 1)
+#' fix_aspect_ratio(p, .ratio = 1)
 #'
 #' @importFrom ggplot2 ggplot_build coord_fixed
 #' @export
-fix_limit <- function(.plot, .ratio, .clip = "off") {
+fix_aspect_ratio <- function(.plot, .ratio, .clip = "off") {
   # get x limits
   xr1 <- ggplot_build(.plot)$layout$panel_scales_x[[1]]$range$range[[1]]
   xr2 <- ggplot_build(.plot)$layout$panel_scales_x[[1]]$range$range[[2]]
@@ -216,6 +216,29 @@ fix_limit <- function(.plot, .ratio, .clip = "off") {
   stund <- x_range / y_range
   rlt <- .plot + coord_fixed(ratio = stund * .ratio, clip = .clip)
   return(rlt)
+}
+
+#' Fix Aspect Ratio of ggplot Based on Plot Limits
+#'
+#' `fix_limit()` is kept for backward compatibility. Use
+#' `fix_aspect_ratio()` for new code.
+#'
+#' @inheritParams fix_aspect_ratio
+#'
+#' @return A modified ggplot object with adjusted aspect ratio
+#'
+#' @examples
+#' library(ggplot2)
+#'
+#' p <- ggplot(mtcars, aes(wt, mpg)) +
+#'   geom_point()
+#'
+#' # Backward-compatible API
+#' fix_limit(p, .ratio = 1)
+#'
+#' @export
+fix_limit <- function(.plot, .ratio, .clip = "off") {
+  fix_aspect_ratio(.plot = .plot, .ratio = .ratio, .clip = .clip)
 }
 
 #' Create formatted axis labels for isotope data
