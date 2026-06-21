@@ -10,6 +10,12 @@ Create plot with geom_errorbar + geom_errorbarh with constant cap width.
 Load packages.
 
 ``` r
+knitr::opts_chunk$set(
+  fig.width = 7,
+  fig.height = 5,
+  fig.dpi = 300
+)
+
 library(tidyverse)
 library(ggbothbar)
 
