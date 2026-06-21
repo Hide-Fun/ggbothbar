@@ -131,6 +131,12 @@ StatMeanLabel <- ggproto(
 
     if ("label" %in% names(data)) {
       labels <- unique(data$label[!is.na(data$label)])
+      if (length(labels) > 1) {
+        warning(
+          "Multiple labels found in one group; using the first non-missing label.",
+          call. = FALSE
+        )
+      }
       label <- if (length(labels) > 0) labels[1] else NA_character_
     } else {
       label <- paste0(
