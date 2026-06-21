@@ -4,7 +4,14 @@
 \alias{write_google_sheets}
 \title{Write dataframes to Google Sheets}
 \usage{
-write_google_sheets(data_list, sheet_names, spreadsheet_name)
+write_google_sheets(
+  data_list,
+  sheet_names,
+  spreadsheet_name,
+  filter = TRUE,
+  freeze_first_row = TRUE,
+  auto_width = TRUE
+)
 }
 \arguments{
 \item{data_list}{List of dataframes}
@@ -12,6 +19,12 @@ write_google_sheets(data_list, sheet_names, spreadsheet_name)
 \item{sheet_names}{Vector of sheet names}
 
 \item{spreadsheet_name}{Name of the spreadsheet}
+
+\item{filter}{Logical. Whether to enable column filters on the header row}
+
+\item{freeze_first_row}{Logical. Whether to freeze the first row}
+
+\item{auto_width}{Logical. Whether to automatically fit column widths}
 }
 \value{
 A tibble with spreadsheet ID and URL

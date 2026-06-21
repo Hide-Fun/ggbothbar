@@ -4,7 +4,16 @@
 \alias{assert_parameters}
 \title{Validate function parameters}
 \usage{
-assert_parameters(.data, sheet_names, name, local, download)
+assert_parameters(
+  .data,
+  sheet_names,
+  name,
+  local,
+  download,
+  filter = TRUE,
+  freeze_first_row = TRUE,
+  auto_width = TRUE
+)
 }
 \arguments{
 \item{.data}{List of dataframes}
@@ -16,6 +25,12 @@ assert_parameters(.data, sheet_names, name, local, download)
 \item{local}{Local Excel option}
 
 \item{download}{Download option}
+
+\item{filter}{Filter option}
+
+\item{freeze_first_row}{Freeze first row option}
+
+\item{auto_width}{Auto-width option}
 }
 \description{
 Validate function parameters

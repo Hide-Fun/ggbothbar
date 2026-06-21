@@ -10,7 +10,10 @@ write_sheets(
   name,
   local = FALSE,
   download = FALSE,
-  path = NULL
+  path = NULL,
+  filter = TRUE,
+  freeze_first_row = TRUE,
+  auto_width = TRUE
 )
 }
 \arguments{
@@ -26,6 +29,12 @@ write_sheets(
 
 \item{path}{Optional. Path where the Excel file will be saved.
 If NULL (default), saves to working directory with \code{name}.}
+
+\item{filter}{Logical. Whether to enable column filters on the header row.}
+
+\item{freeze_first_row}{Logical. Whether to freeze the first row.}
+
+\item{auto_width}{Logical. Whether to automatically fit column widths.}
 }
 \value{
 A tibble with:
