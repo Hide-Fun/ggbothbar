@@ -1,4 +1,4 @@
-# ggbothbar 1.1.0
+# ggbothbar 1.1.1
 
 ## New features
 
