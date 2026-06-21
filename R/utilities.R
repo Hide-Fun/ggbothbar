@@ -419,9 +419,6 @@ write_sheets <- function(
   freeze_first_row = TRUE, # Whether to freeze the first row
   auto_width = TRUE # Whether to auto-fit column widths
 ) {
-  # Validate dependencies
-  assert_dependencies(local, download)
-
   # Validate parameters
   assert_parameters(
     .data,
@@ -433,6 +430,9 @@ write_sheets <- function(
     freeze_first_row,
     auto_width
   )
+
+  # Validate dependencies
+  assert_dependencies(local, download)
 
   # Set file path if not provided
   if (is.null(path)) {
@@ -535,6 +535,10 @@ assert_parameters <- function(
     stop("'.data' must be a list of dataframes", call. = FALSE)
   }
 
+  if (length(.data) < 1L) {
+    stop("'.data' must contain at least one dataframe", call. = FALSE)
+  }
+
   # Check each element is a data frame
   non_df <- purrr::map_lgl(.data, ~ !is.data.frame(.x))
   if (any(non_df)) {
@@ -546,6 +550,10 @@ assert_parameters <- function(
     stop("'sheet_names' must be a character vector", call. = FALSE)
   }
 
+  if (anyNA(sheet_names) || any(!nzchar(sheet_names))) {
+    stop("'sheet_names' must not contain missing or empty values", call. = FALSE)
+  }
+
   if (length(sheet_names) != length(.data)) {
     stop(
       "'sheet_names' must have the same length as '.data' (",
@@ -553,6 +561,33 @@ assert_parameters <- function(
       " vs ",
       length(sheet_names),
       ")",
+      call. = FALSE
+    )
+  }
+
+  if (anyDuplicated(tolower(sheet_names))) {
+    stop("'sheet_names' must be unique, ignoring case", call. = FALSE)
+  }
+
+  too_long <- nchar(sheet_names) > 31L
+  if (any(too_long)) {
+    stop(
+      "'sheet_names' must be 31 characters or fewer for Excel compatibility: ",
+      paste(sheet_names[too_long], collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  invalid_chars <- c(":", "\\", "/", "?", "*", "[", "]")
+  invalid_names <- vapply(
+    strsplit(sheet_names, "", fixed = TRUE),
+    function(chars) any(chars %in% invalid_chars),
+    logical(1)
+  )
+  if (any(invalid_names)) {
+    stop(
+      "'sheet_names' must not contain Excel-invalid characters (: \\ / ? * [ ]): ",
+      paste(sheet_names[invalid_names], collapse = ", "),
       call. = FALSE
     )
   }
@@ -567,26 +602,30 @@ assert_parameters <- function(
   }
 
   # Check boolean parameters
-  if (!is.logical(local) || length(local) != 1) {
+  if (!is.logical(local) || length(local) != 1 || is.na(local)) {
     stop("'local' must be a logical value (TRUE or FALSE)", call. = FALSE)
   }
 
-  if (!is.logical(download) || length(download) != 1) {
+  if (!is.logical(download) || length(download) != 1 || is.na(download)) {
     stop("'download' must be a logical value (TRUE or FALSE)", call. = FALSE)
   }
 
-  if (!is.logical(filter) || length(filter) != 1) {
+  if (!is.logical(filter) || length(filter) != 1 || is.na(filter)) {
     stop("'filter' must be a logical value (TRUE or FALSE)", call. = FALSE)
   }
 
-  if (!is.logical(freeze_first_row) || length(freeze_first_row) != 1) {
+  if (
+    !is.logical(freeze_first_row) ||
+      length(freeze_first_row) != 1 ||
+      is.na(freeze_first_row)
+  ) {
     stop(
       "'freeze_first_row' must be a logical value (TRUE or FALSE)",
       call. = FALSE
     )
   }
 
-  if (!is.logical(auto_width) || length(auto_width) != 1) {
+  if (!is.logical(auto_width) || length(auto_width) != 1 || is.na(auto_width)) {
     stop("'auto_width' must be a logical value (TRUE or FALSE)", call. = FALSE)
   }
 
