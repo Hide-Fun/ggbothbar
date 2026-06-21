@@ -1,6 +1,6 @@
-#' Isotope theme for ggplot2
+#' Academic theme for ggplot2
 #'
-#' A clean theme with bold labels based on theme_classic
+#' A clean complete theme with bold labels based on theme_classic
 #'
 #' @param base_size Base font size
 #' @param base_family Base font family ("Arial" by default)
@@ -17,9 +17,9 @@
 #' library(ggplot2)
 #' ggplot(mtcars, aes(x = wt, y = mpg)) +
 #'   geom_point() +
-#'   theme_isotope()
+#'   theme_aca()
 #' }
-theme_isotope <- function(
+theme_aca <- function(
   base_size = 20,
   base_family = "Arial",
   base_face = "bold",
@@ -70,4 +70,35 @@ theme_isotope <- function(
       axis.line = element_line(linewidth = .7),
       axis.ticks = element_line(linewidth = .7)
     )
+}
+
+#' Isotope theme for ggplot2
+#'
+#' `theme_isotope()` is kept for backward compatibility. Use [theme_aca()]
+#' for new code.
+#'
+#' @inheritParams theme_aca
+#'
+#' @return A ggplot2 theme
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(ggplot2)
+#' ggplot(mtcars, aes(x = wt, y = mpg)) +
+#'   geom_point() +
+#'   theme_isotope()
+#' }
+theme_isotope <- function(
+  base_size = 20,
+  base_family = "Arial",
+  base_face = "bold",
+  text_color = "black"
+) {
+  theme_aca(
+    base_size = base_size,
+    base_family = base_family,
+    base_face = base_face,
+    text_color = text_color
+  )
 }

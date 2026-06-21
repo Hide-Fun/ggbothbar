@@ -84,25 +84,40 @@ makeContent.errorbarb <- function(x) {
   fun.errorbar <- x$fun.errorbar
   na.rm <- x$na.rm
 
-  # summarise mean & sd or se
-  # calculate coordination
-  if (fun.errorbar == "sd") {
-    errorbarb <- create_errorbarb(
-      x = mean(coords_x, na.rm = na.rm),
-      y = mean(coords_y, na.rm = na.rm),
-      height = stats::sd(coords_y, na.rm = na.rm),
-      width = stats::sd(coords_x, na.rm = na.rm),
-      errorbar_tip_size = errorbar_tip_size
-    )
-  } else if (fun.errorbar == "se") {
-    errorbarb <- create_errorbarb(
-      x = mean(coords_x, na.rm = na.rm),
-      y = mean(coords_y, na.rm = na.rm),
-      height = se(coords_y, na.rm = na.rm),
-      width = se(coords_x, na.rm = na.rm),
-      errorbar_tip_size = errorbar_tip_size
-    )
+  # Early return when there is no finite data in this panel
+  # (e.g. facet combination with no points)
+  if (!any(is.finite(coords_x)) || !any(is.finite(coords_y))) {
+    # nothing to draw
+    grid::setChildren(x, grid::gList())
+    return(x)
   }
+
+  # Compute height and width according to fun.errorbar
+  if (fun.errorbar == "sd") {
+    height <- stats::sd(coords_y, na.rm = na.rm)
+    width <- stats::sd(coords_x, na.rm = na.rm)
+  } else if (fun.errorbar == "se") {
+    height <- se(coords_y, na.rm = na.rm)
+    width <- se(coords_x, na.rm = na.rm)
+  } else {
+    rlang::abort("`fun.errorbar` must be either 'sd' or 'se'.")
+  }
+
+  # If height or width cannot be computed (NA or non-positive),
+  # do not draw anything for this panel
+  if (!is.finite(height) || !is.finite(width) || height <= 0 || width <= 0) {
+    grid::setChildren(x, grid::gList())
+    return(x)
+  }
+
+  # Create errorbar coordinates
+  errorbarb <- create_errorbarb(
+    x = mean(coords_x, na.rm = na.rm),
+    y = mean(coords_y, na.rm = na.rm),
+    height = height,
+    width = width,
+    errorbar_tip_size = errorbar_tip_size
+  )
 
   # Construct the grob
   errorbarb_line <- grid::segmentsGrob(
